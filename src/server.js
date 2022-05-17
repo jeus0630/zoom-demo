@@ -15,15 +15,26 @@ app.get("/", (req, res) => {
 const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
 
-wss.on("connection", function connection(socket) {
-    socket.send("Hello!!");
+const sockets = [];
 
+wss.on("connection", function connection(socket) {
+    sockets.push(socket);
+    socket["nickname"] = "anonymous";
     socket.on("close", () => {
         console.log('disconnected from browser');
     })
 
     socket.on("message", message => {
-        console.log(message.toString());
+        const data = JSON.parse(message.toString());
+
+        if (data.type === 'text') {
+            console.log({ ...data, nickname: socket.nickname });
+            sockets.map(aSocket => aSocket.send(JSON.stringify({ ...data, nickname: socket.nickname })));
+        }
+
+        if (data.type === 'nickname')
+            socket["nickname"] = data.payload;
+
     })
 })
 
