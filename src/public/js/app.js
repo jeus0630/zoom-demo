@@ -1,44 +1,33 @@
-const ul = document.querySelector('ul');
-const nickForm = document.querySelector('#nick');
-const msgForm = document.querySelector('#message');
+// Put all your frontend code here.
+const socket = new WebSocket("ws://localhost:3000");
 
-const socket = new WebSocket('ws://localhost:3000');
+const nicknameForm = document.querySelector("#nickname");
+const messageForm = document.querySelector("#message");
+const ul = document.querySelector("ul");
 
-socket.addEventListener('open', function (event) {
-
+nicknameForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const input = nicknameForm.querySelector("input");
+    const obj = {
+        type: "nickname",
+        payload: input.value
+    };
+    socket.send(JSON.stringify(obj));
+    input.value = "";
 });
 
-// 서버에서 메세지 받을때
-socket.addEventListener('message', function (event) {
-    const data = JSON.parse(event.data);
-    console.log(data);
-    const li = `<li>${data.nickname}: ${data.payload}</li>`
-    ul.insertAdjacentHTML('beforeend', li);
+messageForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const input = messageForm.querySelector("input");
+    const obj = {
+        type: "message",
+        payload: input.value
+    };
+    socket.send(JSON.stringify(obj));
+    input.value = "";
 });
 
-// 서버에서 종료했을때
-socket.addEventListener('close', function (event) {
-    console.log('Bye Server!');
-})
-
-nickForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const input = nickForm.querySelector('input');
-    const { value } = input;
-    input.value = null;
-    socket.send(JSON.stringify({
-        type: 'nickname',
-        payload: value
-    }));
-})
-
-msgForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const input = msgForm.querySelector('input');
-    const { value } = input;
-    input.value = null;
-    socket.send(JSON.stringify({
-        type: 'text',
-        payload: value
-    }));
-})
+socket.addEventListener("message", ({ data }) => {
+    const li = `<li>${data}</li>`;
+    ul.insertAdjacentHTML("beforeend", li);
+});
