@@ -1,3 +1,5 @@
+import http from 'http';
+import { WebSocketServer } from 'ws';
 import express from 'express';
 
 const app = express();
@@ -10,6 +12,21 @@ app.get("/", (req, res) => {
     res.render("home");
 })
 
-app.listen(3000, () => {
-    console.log('hello');
-}) 
+const server = http.createServer(app);
+const wss = new WebSocketServer({ server });
+
+wss.on("connection", function connection(socket) {
+    socket.send("Hello!!");
+
+    socket.on("close", () => {
+        console.log('disconnected from browser');
+    })
+
+    socket.on("message", message => {
+        console.log(message.toString());
+    })
+})
+
+server.listen(3000, () => {
+    console.log('server is listening on port 3000');
+})
