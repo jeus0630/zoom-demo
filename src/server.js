@@ -17,7 +17,10 @@ const httpServer = http.createServer(app);
 const io = SocketIO(httpServer);
 
 io.on('connection', socket => {
-    console.log(socket);
+    socket.on("room", (msg, done, msg2) => {
+        console.log(msg);
+        done();
+    });
 })
 
 // const sockets = [];
