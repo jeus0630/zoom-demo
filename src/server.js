@@ -17,9 +17,10 @@ const httpServer = http.createServer(app);
 const io = SocketIO(httpServer);
 
 io.on('connection', socket => {
-    socket.on("room", (msg, done, msg2) => {
-        console.log(msg);
+    socket.on("room", (msg, done) => {
+        socket.join(msg.payload);
         done();
+        socket.to(msg.payload).emit("welcome", "A new user joined!");
     });
 })
 

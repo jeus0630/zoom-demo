@@ -10,8 +10,14 @@ html(lang="en")
         header
             h1 Noom
         main
+            h1#roomName
             div#welcome
                 form(action="") 
                     input(type="text" placeholder="room name" required)
                     button Enter Room
+            
+            #message 
+                form(action="") 
+                    input(type="text" placeholder="meesage" required)
+                    button Send Message
         script(type="module" src="/public/js/app.js") 
