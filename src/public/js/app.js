@@ -8,11 +8,15 @@ const form = welcome.querySelector("form");
 const message = document.querySelector('#message');
 const form2 = message.querySelector("form");
 
+const nickname = document.querySelector('#nickname');
+const form3 = nickname.querySelector("form");
+
 const h1 = document.querySelector('#roomName');
 const ul = document.querySelector('ul');
 
 
 message.hidden = true;
+welcome.hidden = true;
 
 let roomName;
 
@@ -40,12 +44,25 @@ form2.addEventListener("submit", async (e) => {
     input.value = '';
 })
 
+form3.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const input = form3.querySelector("input");
+    const value = input.value;
+    socket.emit("nickname", value, () => {
+        nickname.hidden = true;
+        welcome.hidden = false;
+    });
+    input.value = '';
+})
+
 socket.on("welcome", (msg) => {
-    console.log(msg);
+    const li = `<li>${msg}</li>`
+    ul.insertAdjacentHTML('beforeend', li);
 })
 
 socket.on("bye", (msg) => {
-    console.log(msg);
+    const li = `<li>${msg}</li>`
+    ul.insertAdjacentHTML('beforeend', li);
 })
 
 socket.on("newMessage", msg => {

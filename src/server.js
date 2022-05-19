@@ -20,17 +20,21 @@ io.on('connection', socket => {
     socket.on("room", (msg, done) => {
         socket.join(msg.payload);
         done();
-        socket.to(msg.payload).emit("welcome", "A new user joined!");
-        console.log(socket.rooms);
+        socket.to(msg.payload).emit("welcome", `${socket.nickname} has joined!`);
     });
 
     socket.on("disconnecting", () => {
-        socket.rooms.forEach((room) => socket.to(room).emit("bye", "someone left!"));
+        socket.rooms.forEach((room) => socket.to(room).emit("bye", `${socket.nickname} left!`));
     })
 
     socket.on("newMessage", (roomName, msg, done) => {
         done();
-        socket.to(roomName).emit("newMessage", msg);
+        socket.to(roomName).emit("newMessage", `${socket.nickname}: ${msg}`);
+    })
+
+    socket.on("nickname", (name, done) => {
+        socket.nickname = name;
+        done();
     })
 })
 
