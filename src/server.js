@@ -21,7 +21,17 @@ io.on('connection', socket => {
         socket.join(msg.payload);
         done();
         socket.to(msg.payload).emit("welcome", "A new user joined!");
+        console.log(socket.rooms);
     });
+
+    socket.on("disconnecting", () => {
+        socket.rooms.forEach((room) => socket.to(room).emit("bye", "someone left!"));
+    })
+
+    socket.on("newMessage", (roomName, msg, done) => {
+        done();
+        socket.to(roomName).emit("newMessage", msg);
+    })
 })
 
 // const sockets = [];
